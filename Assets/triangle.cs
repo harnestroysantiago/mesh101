@@ -4,42 +4,44 @@ using UnityEngine;
 
 public class triangle : MonoBehaviour
 {
-    private Vector3[] _vertices;
+    private readonly Vector3 _chunkDimension = new Vector3 (4,4,4);
+    private readonly Vector3[] _vertices = new Vector3[125];
     private int[] _triangles = new int[3];
+    
     private Vector2[] _uv = new Vector2[3];
 
-    private Vector3 _chunkDimension = new Vector3 (4,4,4);
-
 // Start is called before the first frame update
-void Start(){
-        DefineChunkShape();
+    void Start()
+    {
+        StartCoroutine(DefineChunkShape());
     }
 
-    void DefineChunkShape(){
-        var vertCount = 125;
-        for (int i = 0; i < vertCount; i++)
+    IEnumerator DefineChunkShape()
+    {
+        for (int i = 0, y = 0; y <= _chunkDimension.x; y++)
         {
-            for (int x = 0; x < _chunkDimension.x; x++)
+            for (int z = 0; z <= _chunkDimension.y; z++)
             {
-                for (int y = 0; y < _chunkDimension.y; y++)
+                for (int x = 0; x <= _chunkDimension.z; x++)
                 {
-                    for (int z = 0; z < _chunkDimension.z; z++)
-                    {
-                        _vertices[i] = new Vector3( x, y, z );
-                    }
+                    _vertices[i] = new Vector3(x, y, z);
+                    i++;
+
+                    yield return new WaitForSeconds(0.1f);
                 }
             }
         }
     }
-
-    void DefineMesh(){
-
-    }
-
-    void OnDrawGizmos() {
-        Gizmos.color = Color.blue;
-        for (int i = 0; i < _vertices.Length; i++){
-            Gizmos.DrawSphere(_vertices[i], 0.05f);
+    
+    void OnDrawGizmos() 
+    {
+        if(_vertices.Length == 0)
+            return;
+        
+        Gizmos.color = Color.red;
+        foreach (var vertex in _vertices)
+        {
+            Gizmos.DrawSphere(vertex, 0.05f);
         }
     }
 }
