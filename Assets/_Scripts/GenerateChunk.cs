@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenerateChunk : MonoBehaviour
 {
     
-    private static Vector3Int _chunkDimension = new Vector3Int(4,4,4);
+    private static Vector3Int _chunkDimension = new Vector3Int(3,3,3);
     private int _terrainHeight = 2;
     private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
     private Vector3[] _vertices;
@@ -120,7 +120,7 @@ public class GenerateChunk : MonoBehaviour
                     {
                         _block[x, y, z] = new BlockDto()
                         {
-                            Type = Enums.BlockType.Grass,
+                            Type = Enums.BlockType.Dirt,
                             Side = new[] { false, false, false, false, false, false }
                         };
                     }
@@ -179,10 +179,16 @@ public class GenerateChunk : MonoBehaviour
         if(_vertices == null)
             return;
         
-        Gizmos.color = Color.green;
-        for(int i = 0; i < _vertices.Length; i++)
+        Gizmos.color = Color.yellow;
+        for (int x = 0; x < _chunkDimension.x; x++)
         {
-            Gizmos.DrawSphere(_vertices[i] + transform.position, 0.1f);
+            for (int y = 0; y < _chunkDimension.y; y++)
+            {
+                for (int z = 0; z < _chunkDimension.z; z++)
+                {
+                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.1f);
+                }
+            }
         }
         
     }
