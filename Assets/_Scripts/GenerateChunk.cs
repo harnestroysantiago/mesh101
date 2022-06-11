@@ -26,7 +26,7 @@ public class GenerateChunk : MonoBehaviour
     }
 
     // this works for one chunk, we need to generate the whole chunk data and render them.
-    void GenerateMesh(Mesh mesh)
+    private void GenerateMesh(Mesh mesh)
     {
         Vector3Int blockLoc = new Vector3Int(0, 0, 0);
         BlockDto block = _block[blockLoc.x, blockLoc.y, blockLoc.z];
@@ -100,7 +100,7 @@ public class GenerateChunk : MonoBehaviour
         mesh.RecalculateTangents();
     }
     
-    void GenerateBlockData()
+    private void GenerateBlockData()
     {
         for (int x = 0; x < _chunkDimension.x; x++)
         {
@@ -108,22 +108,7 @@ public class GenerateChunk : MonoBehaviour
             {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    if (y > _terrainHeight)
-                    {
-                        _block[x, y, z] = new BlockDto()
-                        {
-                            Type = Enums.BlockType.Air,
-                            Side = new[] { false, false, false, false, false, false }
-                        };
-                    }
-                    else
-                    {
-                        _block[x, y, z] = new BlockDto()
-                        {
-                            Type = Enums.BlockType.Dirt,
-                            Side = new[] { false, false, false, false, false, false }
-                        };
-                    }
+                    PlaceBlockData(y, x, z);
                 }
             }
         }
@@ -140,7 +125,27 @@ public class GenerateChunk : MonoBehaviour
         }
     }
 
-    void CalculateSides(BlockDto block, int x, int y, int z)
+    private void PlaceBlockData(int y, int x, int z)
+    {
+        if (y > _terrainHeight)
+        {
+            _block[x, y, z] = new BlockDto()
+            {
+                Type = Enums.BlockType.Air,
+                Side = new[] { false, false, false, false, false, false }
+            };
+        }
+        else
+        {
+            _block[x, y, z] = new BlockDto()
+            {
+                Type = Enums.BlockType.Dirt,
+                Side = new[] { false, false, false, false, false, false }
+            };
+        }
+    }
+
+    private void CalculateSides(BlockDto block, int x, int y, int z)
     {
         block.Side[(int)Enums.BlockSide.Bottom] =
             TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.down).Type == Enums.BlockType.Air;
@@ -156,7 +161,7 @@ public class GenerateChunk : MonoBehaviour
             TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.back).Type == Enums.BlockType.Air;
     }
     
-    BlockDto TryGetValidBlock(Vector3Int blockLoc)
+    private BlockDto TryGetValidBlock(Vector3Int blockLoc)
     {
         try
         {
