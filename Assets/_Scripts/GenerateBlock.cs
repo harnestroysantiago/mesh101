@@ -87,8 +87,8 @@ public class GenerateBlock : MonoBehaviour
         //Top [1] = CBF,CFG || 215 , 256  
         //Left [2] = AEF,AFB || 045 , 051 
         //Right [3] = HDC,HCG || 732 , 726
-        //Front [4] = DAB,DBC || 301 , 312
-        //Back [5] = EHG,EGF || 476 , 465
+        //Front [4] = EHG,EGF || 476 , 465
+        //Back [5] = DAB,DBC || 301 , 312
     }
 
     void UpdateMesh()
