@@ -20,15 +20,108 @@ public class GenerateTerrain : MonoBehaviour
     private Mesh _mesh;
     private MeshFilter _meshFilter;
     
-    // Start is called before the first frame update
-
-    private void Awake()
-    {
-        // calculations here
-    }
-
     void Start()
     {
 
+    }
+    
+    private void GenerateBlockData()
+    {
+        for (int x = 0; x < _chunkDimension.x; x++)
+        {
+            for (int y = 0; y < _chunkDimension.y; y++)
+            {
+                for (int z = 0; z < _chunkDimension.z; z++)
+                {
+                    PlaceBlockData(y, x, z);
+                }
+            }
+        }
+
+        for (int x = 0; x < _chunkDimension.x; x++)
+        {
+            for (int y = 0; y < _chunkDimension.y; y++)
+            {
+                for (int z = 0; z < _chunkDimension.z; z++)
+                {
+                    CalculateSides(_block[x, y, z],x,y,z);
+                }
+            }
+        }
+    }
+
+    private void PlaceBlockData(int y, int x, int z)
+    {
+        if (y > _terrainHeight)
+        {
+            _block[x, y, z] = new BlockDto()
+            {
+                Type = Enums.BlockType.Air,
+                Side = new[] { false, false, false, false, false, false }
+            };
+        }
+        else
+        {
+            _block[x, y, z] = new BlockDto()
+            {
+                Type = Enums.BlockType.Dirt,
+                Side = new[] { false, false, false, false, false, false }
+            };
+        }
+    }
+
+    private void CalculateSides(BlockDto block, int x, int y, int z)
+    {
+        if (block.Type == Enums.BlockType.Air)
+            return;
+        
+        block.Side[(int)Enums.BlockSide.Bottom] =
+            TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.down).Type == Enums.BlockType.Air;
+        block.Side[(int)Enums.BlockSide.Top] =
+            TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.up).Type == Enums.BlockType.Air;
+        block.Side[(int)Enums.BlockSide.Left] =
+            TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.left).Type == Enums.BlockType.Air;
+        block.Side[(int)Enums.BlockSide.Right] =
+            TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.right).Type == Enums.BlockType.Air;
+        block.Side[(int)Enums.BlockSide.Front] =
+            TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.forward).Type == Enums.BlockType.Air;
+        block.Side[(int)Enums.BlockSide.Back] =
+            TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.back).Type == Enums.BlockType.Air;
+    }
+    
+    private BlockDto TryGetValidBlock(Vector3Int blockLoc)
+    {
+        try
+        {
+            return _block[blockLoc.x, blockLoc.y, blockLoc.z];
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        return new BlockDto()
+        {
+            Type = Enums.BlockType.Air,
+            Side = new[] { false, false, false, false, false, false }
+        };
+    }
+
+    private void OnDrawGizmos()
+    {
+        if(_vertices.Count == null)
+            return;
+        
+        Gizmos.color = Color.magenta;
+        for (int x = 0; x <= _chunkDimension.x; x++)
+        {
+            for (int y = 0; y <= _chunkDimension.y; y++)
+            {
+                for (int z = 0; z <= _chunkDimension.z; z++)
+                {
+                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
+                }
+            }
+        }
     }
 }
