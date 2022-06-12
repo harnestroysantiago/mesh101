@@ -7,7 +7,7 @@ using UnityEngine;
 public class GenerateChunk : MonoBehaviour
 {
     
-    private static Vector3Int _chunkDimension = new Vector3Int(3,3,3);
+    private static Vector3Int _chunkDimension = new Vector3Int(4,4,4);
     private int _terrainHeight = 2;
     private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
@@ -29,13 +29,15 @@ public class GenerateChunk : MonoBehaviour
 
     IEnumerator GenerateMeshes(Mesh mesh)
     {
+        int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
         {
             for (int y = 0; y < _chunkDimension.y; y++)
             {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateMesh(mesh,x,y,z);
+                    GenerateMesh(mesh,x,y,z, blockCount);
+                    blockCount++;
                     yield return new WaitForSeconds(0.1f);
                 }
             }
@@ -43,7 +45,7 @@ public class GenerateChunk : MonoBehaviour
     }
 
     // this works for one chunk, we need to generate the whole chunk data and render them.
-    private void GenerateMesh(Mesh mesh, int x, int y, int z)
+    private void GenerateMesh(Mesh mesh, int x, int y, int z, int blockCount)
     {
         Vector3Int blockLoc = new Vector3Int(x, y, z);
         BlockDto block = _block[blockLoc.x, blockLoc.y, blockLoc.z];
@@ -104,19 +106,18 @@ public class GenerateChunk : MonoBehaviour
                 }
             }
         }
-
+        
         // this updates the offset of the chunk triangles, so we always go on the
         // lenght + the vertex index to give it a quad on each face
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < triangles.Count; i++)
         {
-            //Debug.Log("index " + i + " = "+triangles[i]);
-            
+            triangles[i] += blockCount * 8;
         }
-        
+
         // add to existing _vertex and _triangles
         _vertices.AddRange(vertices);
         _triangles.AddRange(triangles);
-
+        
         var vertArray = _vertices.ToArray();
         var triArray = _triangles.ToArray();
         
@@ -215,11 +216,11 @@ public class GenerateChunk : MonoBehaviour
             return;
         
         Gizmos.color = Color.yellow;
-        for (int x = 0; x < _chunkDimension.x; x++)
+        for (int x = 0; x <= _chunkDimension.x; x++)
         {
-            for (int y = 0; y < _chunkDimension.y; y++)
+            for (int y = 0; y <= _chunkDimension.y; y++)
             {
-                for (int z = 0; z < _chunkDimension.z; z++)
+                for (int z = 0; z <= _chunkDimension.z; z++)
                 {
                     Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.1f);
                 }
