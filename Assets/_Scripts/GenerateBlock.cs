@@ -111,7 +111,7 @@ public class GenerateBlock : MonoBehaviour
         Gizmos.color = Color.red;
         foreach (Vector3 vertex in _vertPos)
         {
-            Gizmos.DrawSphere(vertex, 0.1f);
+            Gizmos.DrawSphere(vertex + transform.position, 0.05f);
         }
     }
 }

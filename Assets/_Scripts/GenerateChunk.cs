@@ -7,8 +7,8 @@ using UnityEngine;
 public class GenerateChunk : MonoBehaviour
 {
     
-    private static Vector3Int _chunkDimension = new Vector3Int(8,16,8);
-    private int _terrainHeight = 4;
+    private static Vector3Int _chunkDimension = new Vector3Int(2,2,2);
+    private int _terrainHeight = 2;
     private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();
@@ -215,17 +215,17 @@ public class GenerateChunk : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices == null)
+        if(_vertices.Count == 0)
             return;
         
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.blue;
         for (int x = 0; x <= _chunkDimension.x; x++)
         {
             for (int y = 0; y <= _chunkDimension.y; y++)
             {
                 for (int z = 0; z <= _chunkDimension.z; z++)
                 {
-                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.1f);
+                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
                 }
             }
         }
