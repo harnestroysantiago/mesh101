@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class GenerateChunk : MonoBehaviour
 {
-    
     private static Vector3Int _chunkDimension = new Vector3Int(2,2,2);
     private int _terrainHeight = 2;
     private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
@@ -229,6 +228,5 @@ public class GenerateChunk : MonoBehaviour
                 }
             }
         }
-        
     }
 }
