@@ -7,8 +7,8 @@ using UnityEngine;
 public class GenerateChunk : MonoBehaviour
 {
     
-    private static Vector3Int _chunkDimension = new Vector3Int(4,4,4);
-    private int _terrainHeight = 2;
+    private static Vector3Int _chunkDimension = new Vector3Int(8,16,8);
+    private int _terrainHeight = 4;
     private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();
@@ -81,7 +81,7 @@ public class GenerateChunk : MonoBehaviour
         // the triangles indexes needs to be adjusted as well, based on how many we have....
         for (int i = 0; i < 6; i++)
         {
-            if (block.Side[i] == true)
+            if (block.Side[i])
             {
                 switch (i)
                 {
@@ -178,6 +178,9 @@ public class GenerateChunk : MonoBehaviour
 
     private void CalculateSides(BlockDto block, int x, int y, int z)
     {
+        if (block.Type == Enums.BlockType.Air)
+            return;
+        
         block.Side[(int)Enums.BlockSide.Bottom] =
             TryGetValidBlock(new Vector3Int(x, y, z) + Vector3Int.down).Type == Enums.BlockType.Air;
         block.Side[(int)Enums.BlockSide.Top] =
