@@ -109,7 +109,7 @@ public class GenerateTerrain : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices.Count == null)
+        if(_vertices.Count == 0)
             return;
         
         Gizmos.color = Color.magenta;

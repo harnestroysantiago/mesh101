@@ -6,8 +6,7 @@ using UnityEngine;
 
 public class GenerateChunk : MonoBehaviour
 {
-    private static Vector3Int _chunkDimension = new Vector3Int(2,2,2);
-    private int _terrainHeight = 2;
+    private static Vector3Int _chunkDimension = new Vector3Int(3,3,3);
     private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();
@@ -26,6 +25,38 @@ public class GenerateChunk : MonoBehaviour
         StartCoroutine(GenerateMeshes(_mesh));
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            ClearBlockAndMeshData();
+            GenerateBlockData();
+            StartCoroutine(GenerateMeshes(_mesh));
+        }
+    }
+
+    private void ClearBlockAndMeshData()
+    {
+        _mesh.Clear();
+        _vertices.Clear();
+        _triangles.Clear();
+        
+        for (int x = 0; x < _chunkDimension.x; x++)
+        {
+            for (int y = 0; y < _chunkDimension.y; y++)
+            {
+                for (int z = 0; z < _chunkDimension.z; z++)
+                {
+                    _block[x, y, z] = new BlockDto()
+                    {
+                        Type = Enums.BlockType.Air,
+                        Side = new[] { false, false, false, false, false, false }
+                    };
+                }
+            }
+        }
+    }
+
     IEnumerator GenerateMeshes(Mesh mesh)
     {
         int blockCount=0;
@@ -37,7 +68,7 @@ public class GenerateChunk : MonoBehaviour
                 {
                     GenerateMesh(mesh,x,y,z, blockCount);
                     blockCount++;
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.01f);
                 }
             }
         }
@@ -157,11 +188,11 @@ public class GenerateChunk : MonoBehaviour
 
     private void PlaceBlockData(int y, int x, int z)
     {
-        if (y > _terrainHeight)
+        if (UnityEngine.Random.Range(0, 2) == 1)
         {
             _block[x, y, z] = new BlockDto()
             {
-                Type = Enums.BlockType.Air,
+                Type = Enums.BlockType.Dirt,
                 Side = new[] { false, false, false, false, false, false }
             };
         }
@@ -169,7 +200,7 @@ public class GenerateChunk : MonoBehaviour
         {
             _block[x, y, z] = new BlockDto()
             {
-                Type = Enums.BlockType.Dirt,
+                Type = Enums.BlockType.Air,
                 Side = new[] { false, false, false, false, false, false }
             };
         }
