@@ -57,6 +57,7 @@ public class GenerateTerrain : MonoBehaviour
                 for (int z = 0; z < _chunkDimension.z; z++)
                     GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
                 
+        
     }
 
     private void GenerateChunk(int x, int y, int z )
@@ -199,15 +200,8 @@ public class GenerateTerrain : MonoBehaviour
 
     private void PlaceBlockData(int y, int x, int z)
     {
-        if (y < _terrainHeight)
-        {
-            GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 2) == 1 ? 
-                Enums.BlockType.Dirt : Enums.BlockType.Air);
-        }
-        else
-        {
-            GenerateBlock(x,y,z,Enums.BlockType.Air);
-        }
+        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 2) == 1 ? 
+            Enums.BlockType.Dirt : Enums.BlockType.Air);
     }
 
     private void GenerateBlock(int y, int x, int z, Enums.BlockType type)
@@ -259,7 +253,7 @@ public class GenerateTerrain : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices.Count == 0)
+        if(_vertices == null)
             return;
         
         Gizmos.color = Color.magenta;
