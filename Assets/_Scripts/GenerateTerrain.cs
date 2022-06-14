@@ -54,7 +54,7 @@ public class GenerateTerrain : MonoBehaviour
         mesh = GenerateMeshesInThisChunk(x,y,z, mesh);
         
         //instantiate chunk prefab
-        var chunkView = Instantiate(_chunkPrefab, new Vector3(x, y, z)+transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
+        var chunkView = Instantiate(_chunkPrefab, transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
         
         // initialize chunk
         chunkView.InitializeChunk(mesh, _chunkMaterial);
@@ -262,7 +262,7 @@ public class GenerateTerrain : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices.Count == null)
+        if(_vertices.Count == 0)
             return;
         
         Gizmos.color = Color.magenta;
