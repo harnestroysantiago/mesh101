@@ -30,6 +30,20 @@ public class GenerateTerrain : MonoBehaviour
         GenerateChunks();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+            ClearMeshData();
+            GenerateBlockData();
+            GenerateChunks();
+        }
+    }
+
     private void GenerateChunks()
     {
         _mesh = new Mesh();
