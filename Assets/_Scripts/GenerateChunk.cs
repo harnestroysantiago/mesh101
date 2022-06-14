@@ -189,23 +189,20 @@ public class GenerateChunk : MonoBehaviour
 
     private void PlaceBlockData(int y, int x, int z)
     {
-        if (UnityEngine.Random.Range(0, 2) == 1)
-        {
-            _block[x, y, z] = new BlockDto()
-            {
-                Type = Enums.BlockType.Dirt,
-                Side = new[] { false, false, false, false, false, false }
-            };
-        }
-        else
-        {
-            _block[x, y, z] = new BlockDto()
-            {
-                Type = Enums.BlockType.Air,
-                Side = new[] { false, false, false, false, false, false }
-            };
-        }
+        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 2) == 1 ? 
+                Enums.BlockType.Dirt : Enums.BlockType.Air);
     }
+
+    private void GenerateBlock(int y, int x, int z, Enums.BlockType type)
+    {
+        if (_block != null)
+            _block[x, y, z] = new BlockDto()
+            {
+                Type = type,
+                Side = new[] { false, false, false, false, false, false }
+            };
+    }
+
 
     private void CalculateSides(BlockDto block, int x, int y, int z)
     {
