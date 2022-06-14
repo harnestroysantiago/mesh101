@@ -26,14 +26,13 @@ public class GenerateTerrain : MonoBehaviour
     private Material _chunkMaterial;
     void Start()
     {
-        _mesh = new Mesh();
-        
         GenerateBlockData();
-        GenerateChunks(_mesh);
+        GenerateChunks();
     }
 
-    private void GenerateChunks(Mesh mesh)
+    private void GenerateChunks()
     {
+        _mesh = new Mesh();
         //where are passing the origin of each chunk
         for (int x = 0; x < _chunkDimension.x; x++)
         {
@@ -41,7 +40,7 @@ public class GenerateTerrain : MonoBehaviour
             {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize, mesh);
+                    GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize, _mesh);
                 }
             }
         }
