@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class GenerateChunk : MonoBehaviour
 {
@@ -40,7 +41,7 @@ public class GenerateChunk : MonoBehaviour
         _mesh.Clear();
         _vertices.Clear();
         _triangles.Clear();
-        
+
         for (int x = 0; x < _chunkDimension.x; x++)
         {
             for (int y = 0; y < _chunkDimension.y; y++)
