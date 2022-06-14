@@ -48,8 +48,16 @@ public class GenerateTerrain : MonoBehaviour
     private void GenerateChunk(int x, int y, int z, Mesh mesh)
     {
         // loop through all chunks here
-        GenerateMeshes(mesh);
-        // generate mesh and assign
+        mesh = GenerateMeshes(mesh);
+        
+        //instantiate chunk prefab
+        var generatedChunk = Instantiate(_chunkPrefab, new Vector3(x, y, z), Quaternion.identity, transform).GetComponent<ChunkView>();
+        
+        // initialize chunk
+        generatedChunk.InitializeChunk(mesh);
+        
+        // clear mesh data.
+        mesh.Clear();
     }
     
     private void ClearBlockAndMeshData()
@@ -74,7 +82,7 @@ public class GenerateTerrain : MonoBehaviour
         }
     }
 
-    IEnumerator GenerateMeshes(Mesh mesh)
+     Mesh GenerateMeshes(Mesh mesh)
     {
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
@@ -85,10 +93,10 @@ public class GenerateTerrain : MonoBehaviour
                 {
                     GenerateMesh(mesh,x,y,z, blockCount);
                     blockCount++;
-                    yield return new WaitForSeconds(0.01f);
                 }
             }
         }
+        return mesh;
     }
 
     // this works for one chunk, we need to generate the whole chunk data and render them.
