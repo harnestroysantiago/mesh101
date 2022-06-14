@@ -52,26 +52,22 @@ public class GenerateTerrain : MonoBehaviour
     private void GenerateChunks()
     {
         //where are passing the origin of each chunk
-        _mesh = new Mesh();
         for (int x = 0; x < _chunkDimension.x; x++)
             for (int y = 0; y < _chunkDimension.y; y++)
                 for (int z = 0; z < _chunkDimension.z; z++)
-                    GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize, _mesh);
+                    GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
                 
     }
 
-    private void GenerateChunk(int x, int y, int z, Mesh mesh)
+    private void GenerateChunk(int x, int y, int z )
     {
+        _mesh = new Mesh();
         // we are receiving the chunks origin location
-        // loop through all chunks here, passing the chunk origin location
-        mesh = GenerateMeshesInThisChunk(x,y,z, mesh);
-        
+        _mesh = GenerateMeshesInThisChunk(x,y,z, _mesh);
         //instantiate chunk prefab
-        var chunkView = Instantiate(_chunkPrefab, transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
-        
+        ChunkView chunkView = Instantiate(_chunkPrefab, transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
         // initialize chunk
-        chunkView.InitializeChunk(mesh, _chunkMaterial);
-        
+        chunkView.InitializeChunk(_mesh, _chunkMaterial);
         // we clear our data after each chunk
         ClearMeshData();
     }
