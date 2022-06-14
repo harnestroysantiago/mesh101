@@ -38,26 +38,26 @@ public class GenerateTerrain : MonoBehaviour
             {
                 Destroy(child.gameObject);
             }
-            ClearMeshData();
             GenerateBlockData();
             GenerateChunks();
         }
     }
 
+    private void ClearMeshData()
+    {
+        _vertices.Clear();
+        _triangles.Clear();
+    }
+
     private void GenerateChunks()
     {
-        _mesh = new Mesh();
         //where are passing the origin of each chunk
+        _mesh = new Mesh();
         for (int x = 0; x < _chunkDimension.x; x++)
-        {
             for (int y = 0; y < _chunkDimension.y; y++)
-            {
                 for (int z = 0; z < _chunkDimension.z; z++)
-                {
                     GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize, _mesh);
-                }
-            }
-        }
+                
     }
 
     private void GenerateChunk(int x, int y, int z, Mesh mesh)
@@ -75,30 +75,20 @@ public class GenerateTerrain : MonoBehaviour
         // we clear our data after each chunk
         ClearMeshData();
     }
-    
-    private void ClearMeshData()
-    {
-        _mesh.Clear();
-        _vertices.Clear();
-        _triangles.Clear();
-    }
 
-     Mesh GenerateMeshesInThisChunk(int chunkX, int chunkY, int chunkZ, Mesh mesh)
+    Mesh GenerateMeshesInThisChunk(int chunkX, int chunkY, int chunkZ, Mesh mesh)
     {
         // we are receiving the chunk root location
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
-        {
             for (int y = 0; y < _chunkDimension.y; y++)
-            {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
                     GenerateMeshOfEachVoxelInThisChunk(mesh,x+chunkX,y+chunkY,z+chunkZ,blockCount);
                     blockCount++;
                 }
-            }
-        }
-        return _mesh;
+        
+        return mesh;
     }
 
     // this works for one chunk, we need to generate the whole chunk data and render them.
@@ -178,14 +168,12 @@ public class GenerateTerrain : MonoBehaviour
         var vertArray = _vertices.ToArray();
         var triArray = _triangles.ToArray();
         
-        mesh.Clear();
+         mesh.Clear();
         
-        mesh.name = String.Concat(blockLocOffset);
+        mesh.name = "meshy...";
         mesh.vertices = vertArray;
         mesh.triangles = triArray;
         mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        mesh.RecalculateTangents();
     }
     
     private void GenerateBlockData()
