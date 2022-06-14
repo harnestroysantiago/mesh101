@@ -22,9 +22,20 @@ public class GenerateTerrain : MonoBehaviour
     
     void Start()
     {
-
+        // functions here.
     }
-    
+
+    private void GenerateChunks()
+    {
+        GenerateChunk();
+    }
+
+    private void GenerateChunk()
+    {
+        // loop through all chunks here
+        // instantiate
+        // generate mesh and assign
+    }
     
     private void ClearBlockAndMeshData()
     {
