@@ -19,21 +19,36 @@ public class GenerateTerrain : MonoBehaviour
 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
+
+    [SerializeField]
+    private GameObject _chunkPrefab;
     
     void Start()
     {
-        // functions here.
+        _mesh = new Mesh();
+        
+        GenerateBlockData();
+        GenerateChunks(_mesh);
     }
 
-    private void GenerateChunks()
+    private void GenerateChunks(Mesh mesh)
     {
-        GenerateChunk();
+        for (int x = 0; x < _chunkDimension.x; x++)
+        {
+            for (int y = 0; x < _chunkDimension.y; y++)
+            {
+                for (int z = 0; x < _chunkDimension.z; z++)
+                {
+                    GenerateChunk(x,y,z, mesh);
+                }
+            }
+        }
     }
 
-    private void GenerateChunk()
+    private void GenerateChunk(int x, int y, int z, Mesh mesh)
     {
         // loop through all chunks here
-        // instantiate
+        GenerateMeshes(mesh);
         // generate mesh and assign
     }
     
