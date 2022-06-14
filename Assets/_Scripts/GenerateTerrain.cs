@@ -12,7 +12,6 @@ public class GenerateTerrain : MonoBehaviour
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
         _terrainDimension.z/_chunkSize);
-    private int _terrainHeight = 3;
     private BlockDto[,,] _block = new BlockDto[_terrainDimension.x,_terrainDimension.y,_terrainDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();

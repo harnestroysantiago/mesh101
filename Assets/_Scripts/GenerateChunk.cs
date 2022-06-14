@@ -243,7 +243,7 @@ public class GenerateChunk : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices.Count == 0)
+        if(_vertices == null)
             return;
         
         Gizmos.color = Color.blue;
