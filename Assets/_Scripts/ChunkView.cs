@@ -16,10 +16,10 @@ public class ChunkView : MonoBehaviour
     [SerializeField]
     private MeshCollider _meshCollider;
 
-    public void InitializeChunk(Mesh mesh)
+    public void InitializeChunk(Mesh mesh, Material material)
     {
         _meshFilter.mesh = mesh;
         _meshCollider.sharedMesh = mesh;
-        _meshRenderer.material = new Material("Unlit");
+        _meshRenderer.material = material;
     }
 }

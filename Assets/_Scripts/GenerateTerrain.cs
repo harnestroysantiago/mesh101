@@ -6,13 +6,13 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(8,8,8);
+    private static Vector3Int _terrainDimension = new Vector3Int(4,4,4);
     private static int _chunkSize = 2;
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
         _terrainDimension.z/_chunkSize);
-    private int _terrainHeight = 4;
+    private int _terrainHeight = 3;
     private BlockDto[,,] _block = new BlockDto[_terrainDimension.x,_terrainDimension.y,_terrainDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();
@@ -22,7 +22,8 @@ public class GenerateTerrain : MonoBehaviour
 
     [SerializeField]
     private GameObject _chunkPrefab;
-    
+    [SerializeField]
+    private Material _chunkMaterial;
     void Start()
     {
         _mesh = new Mesh();
@@ -35,11 +36,11 @@ public class GenerateTerrain : MonoBehaviour
     {
         for (int x = 0; x < _chunkDimension.x; x++)
         {
-            for (int y = 0; x < _chunkDimension.y; y++)
+            for (int y = 0; y < _chunkDimension.y; y++)
             {
-                for (int z = 0; x < _chunkDimension.z; z++)
+                for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateChunk(x,y,z, mesh);
+                    GenerateChunk(x* _chunkSize,y*_chunkSize,z*_chunkSize, mesh);
                 }
             }
         }
@@ -54,7 +55,7 @@ public class GenerateTerrain : MonoBehaviour
         var generatedChunk = Instantiate(_chunkPrefab, new Vector3(x, y, z), Quaternion.identity, transform).GetComponent<ChunkView>();
         
         // initialize chunk
-        generatedChunk.InitializeChunk(mesh);
+        generatedChunk.InitializeChunk(mesh, _chunkMaterial);
         
         // clear mesh data.
         mesh.Clear();
@@ -188,22 +189,22 @@ public class GenerateTerrain : MonoBehaviour
     
     private void GenerateBlockData()
     {
-        for (int x = 0; x < _chunkDimension.x; x++)
+        for (int x = 0; x < _terrainDimension.x; x++)
         {
-            for (int y = 0; y < _chunkDimension.y; y++)
+            for (int y = 0; y < _terrainDimension.y; y++)
             {
-                for (int z = 0; z < _chunkDimension.z; z++)
+                for (int z = 0; z < _terrainDimension.z; z++)
                 {
                     PlaceBlockData(y, x, z);
                 }
             }
         }
 
-        for (int x = 0; x < _chunkDimension.x; x++)
+        for (int x = 0; x < _terrainDimension.x; x++)
         {
-            for (int y = 0; y < _chunkDimension.y; y++)
+            for (int y = 0; y < _terrainDimension.y; y++)
             {
-                for (int z = 0; z < _chunkDimension.z; z++)
+                for (int z = 0; z < _terrainDimension.z; z++)
                 {
                     CalculateSides(_block[x, y, z],x,y,z);
                 }
@@ -273,15 +274,15 @@ public class GenerateTerrain : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices.Count == 0)
+        if(_vertices.Count == null)
             return;
         
         Gizmos.color = Color.magenta;
-        for (int x = 0; x <= _chunkDimension.x; x++)
+        for (int x = 0; x <= _terrainDimension.x; x++)
         {
-            for (int y = 0; y <= _chunkDimension.y; y++)
+            for (int y = 0; y <= _terrainDimension.y; y++)
             {
-                for (int z = 0; z <= _chunkDimension.z; z++)
+                for (int z = 0; z <= _terrainDimension.z; z++)
                 {
                     Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
                 }

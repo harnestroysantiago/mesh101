@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _chunkPrefab: {fileID: 4914895117221062270, guid: b0a61eff0b67c4a62aa882424d216cb8, type: 3}
+  _chunkMaterial: {fileID: 2100000, guid: 8d869454a4bb44e3caed993ccc31b301, type: 2}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
