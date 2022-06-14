@@ -41,7 +41,7 @@ public class GenerateTerrain : MonoBehaviour
             {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateChunk(x* _chunkSize,y*_chunkSize,z*_chunkSize, mesh);
+                    GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize, mesh);
                 }
             }
         }
@@ -49,7 +49,8 @@ public class GenerateTerrain : MonoBehaviour
 
     private void GenerateChunk(int x, int y, int z, Mesh mesh)
     {
-        // loop through all chunks here
+        // we are receiving the chunks origin location
+        // loop through all chunks here, passing the chunk origin location
         mesh = GenerateMeshesInThisChunk(x,y,z, mesh);
         
         //instantiate chunk prefab
@@ -58,35 +59,20 @@ public class GenerateTerrain : MonoBehaviour
         // initialize chunk
         chunkView.InitializeChunk(mesh, _chunkMaterial);
         
-        _mesh.Clear();
-        _vertices.Clear();
-        _triangles.Clear();
+        // we clear our data after each chunk
+        ClearMeshData();
     }
     
-    private void ClearBlockAndMeshData()
+    private void ClearMeshData()
     {
         _mesh.Clear();
         _vertices.Clear();
         _triangles.Clear();
-
-        for (int x = 0; x < _chunkDimension.x; x++)
-        {
-            for (int y = 0; y < _chunkDimension.y; y++)
-            {
-                for (int z = 0; z < _chunkDimension.z; z++)
-                {
-                    _block[x, y, z] = new BlockDto()
-                    {
-                        Type = Enums.BlockType.Air,
-                        Side = new[] { false, false, false, false, false, false }
-                    };
-                }
-            }
-        }
     }
 
      Mesh GenerateMeshesInThisChunk(int chunkX, int chunkY, int chunkZ, Mesh mesh)
     {
+        // we are receiving the chunk root location
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
         {
@@ -94,7 +80,7 @@ public class GenerateTerrain : MonoBehaviour
             {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateMeshOfEachVoxelInThisChunk(mesh,x + chunkX,y + chunkY,z + chunkZ, blockCount);
+                    GenerateMeshOfEachVoxelInThisChunk(mesh,x+chunkX,y+chunkY,z+chunkZ,blockCount);
                     blockCount++;
                 }
             }
@@ -181,7 +167,7 @@ public class GenerateTerrain : MonoBehaviour
         
         mesh.Clear();
         
-        mesh.name = "mesh...illicious";
+        mesh.name = String.Concat(blockLocOffset);
         mesh.vertices = vertArray;
         mesh.triangles = triArray;
         mesh.RecalculateNormals();
