@@ -52,7 +52,7 @@ public class GenerateTerrain : MonoBehaviour
         mesh = GenerateMeshes(mesh);
         
         //instantiate chunk prefab
-        var generatedChunk = Instantiate(_chunkPrefab, new Vector3(x, y, z), Quaternion.identity, transform).GetComponent<ChunkView>();
+        var generatedChunk = Instantiate(_chunkPrefab, new Vector3(x, y, z)+transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
         
         // initialize chunk
         generatedChunk.InitializeChunk(mesh, _chunkMaterial);
