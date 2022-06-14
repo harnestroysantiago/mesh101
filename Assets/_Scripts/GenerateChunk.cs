@@ -22,8 +22,7 @@ public class GenerateChunk : MonoBehaviour
         _meshFilter.mesh = _mesh;
         
         GenerateBlockData();
-        
-        StartCoroutine(GenerateMeshes(_mesh));
+        GenerateMeshes(_mesh);
     }
 
     private void Update()
@@ -32,7 +31,7 @@ public class GenerateChunk : MonoBehaviour
         {
             ClearBlockAndMeshData();
             GenerateBlockData();
-            StartCoroutine(GenerateMeshes(_mesh));
+            GenerateMeshes(_mesh);
         }
     }
 
@@ -58,21 +57,16 @@ public class GenerateChunk : MonoBehaviour
         }
     }
 
-    IEnumerator GenerateMeshes(Mesh mesh)
+    private void GenerateMeshes(Mesh mesh)
     {
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
-        {
             for (int y = 0; y < _chunkDimension.y; y++)
-            {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateMesh(mesh,x,y,z, blockCount);
+                    GenerateMesh(mesh,x,y,z, blockCount); 
                     blockCount++;
-                    yield return new WaitForSeconds(0.01f);
                 }
-            }
-        }
     }
 
     // this works for one chunk, we need to generate the whole chunk data and render them.
