@@ -34,6 +34,7 @@ public class GenerateTerrain : MonoBehaviour
 
     private void GenerateChunks(Mesh mesh)
     {
+        //where are passing the origin of each chunk
         for (int x = 0; x < _chunkDimension.x; x++)
         {
             for (int y = 0; y < _chunkDimension.y; y++)
@@ -49,16 +50,17 @@ public class GenerateTerrain : MonoBehaviour
     private void GenerateChunk(int x, int y, int z, Mesh mesh)
     {
         // loop through all chunks here
-        mesh = GenerateMeshes(mesh);
+        mesh = GenerateMeshesInThisChunk(x,y,z, mesh);
         
         //instantiate chunk prefab
-        var generatedChunk = Instantiate(_chunkPrefab, new Vector3(x, y, z)+transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
+        var chunkView = Instantiate(_chunkPrefab, new Vector3(x, y, z)+transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
         
         // initialize chunk
-        generatedChunk.InitializeChunk(mesh, _chunkMaterial);
+        chunkView.InitializeChunk(mesh, _chunkMaterial);
         
-        // clear mesh data.
-        mesh.Clear();
+        _mesh.Clear();
+        _vertices.Clear();
+        _triangles.Clear();
     }
     
     private void ClearBlockAndMeshData()
@@ -83,7 +85,7 @@ public class GenerateTerrain : MonoBehaviour
         }
     }
 
-     Mesh GenerateMeshes(Mesh mesh)
+     Mesh GenerateMeshesInThisChunk(int chunkX, int chunkY, int chunkZ, Mesh mesh)
     {
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
@@ -92,19 +94,19 @@ public class GenerateTerrain : MonoBehaviour
             {
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateMesh(mesh,x,y,z, blockCount);
+                    GenerateMeshOfEachVoxelInThisChunk(mesh,x + chunkX,y + chunkY,z + chunkZ, blockCount);
                     blockCount++;
                 }
             }
         }
-        return mesh;
+        return _mesh;
     }
 
     // this works for one chunk, we need to generate the whole chunk data and render them.
-    private void GenerateMesh(Mesh mesh, int x, int y, int z, int blockCount)
+    private void GenerateMeshOfEachVoxelInThisChunk(Mesh mesh, int x, int y, int z, int blockCount)
     {
-        Vector3Int blockLoc = new Vector3Int(x, y, z);
-        BlockDto block = _block[blockLoc.x, blockLoc.y, blockLoc.z];
+        Vector3Int blockLocOffset = new Vector3Int(x, y, z);
+        BlockDto block = _block[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
         
         Vector3[] vertices = new Vector3[]
         {
@@ -123,7 +125,7 @@ public class GenerateTerrain : MonoBehaviour
         // blockLoc + the vertex to give it a quad on each face
         for (int i = 0; i < 8; i++)
         {
-            vertices[i] += blockLoc;
+            vertices[i] += blockLocOffset;
         }
         
         //Bottom [0] = AHE,ADH || 074 , 037
