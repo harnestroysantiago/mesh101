@@ -6,8 +6,8 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(4,4,4);
-    private static int _chunkSize = 2;
+    private static Vector3Int _terrainDimension = new Vector3Int(9,9,9);
+    private static int _chunkSize = 3;
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
@@ -180,7 +180,7 @@ public class GenerateTerrain : MonoBehaviour
             {
                 for (int z = 0; z < _terrainDimension.z; z++)
                 {
-                    PlaceBlockData(y, x, z);
+                    PlaceBlockData(x, y, z);
                 }
             }
         }
@@ -197,13 +197,13 @@ public class GenerateTerrain : MonoBehaviour
         }
     }
 
-    private void PlaceBlockData(int y, int x, int z)
+    private void PlaceBlockData(int x, int y, int z)
     {
         GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 2) == 1 ? 
-            Enums.BlockType.Dirt : Enums.BlockType.Air);
+            Enums.BlockType.Air : Enums.BlockType.Dirt);
     }
 
-    private void GenerateBlock(int y, int x, int z, Enums.BlockType type)
+    private void GenerateBlock(int x, int y, int z, Enums.BlockType type)
     {
         if (_block != null)
             _block[x, y, z] = new BlockDto()
