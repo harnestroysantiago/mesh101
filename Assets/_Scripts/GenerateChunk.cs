@@ -237,19 +237,19 @@ public class GenerateChunk : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices == null)
-            return;
-        
-        Gizmos.color = Color.blue;
-        for (int x = 0; x <= _chunkDimension.x; x++)
-        {
-            for (int y = 0; y <= _chunkDimension.y; y++)
-            {
-                for (int z = 0; z <= _chunkDimension.z; z++)
-                {
-                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
-                }
-            }
-        }
+        // if(_vertices == null)
+        //     return;
+        //
+        // Gizmos.color = Color.blue;
+        // for (int x = 0; x <= _chunkDimension.x; x++)
+        // {
+        //     for (int y = 0; y <= _chunkDimension.y; y++)
+        //     {
+        //         for (int z = 0; z <= _chunkDimension.z; z++)
+        //         {
+        //             Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
+        //         }
+        //     }
+        // }
     }
 }

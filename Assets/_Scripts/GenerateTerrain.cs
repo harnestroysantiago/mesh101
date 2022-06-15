@@ -252,19 +252,19 @@ public class GenerateTerrain : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertices == null)
-            return;
-        
-        Gizmos.color = Color.magenta;
-        for (int x = 0; x <= _terrainDimension.x; x++)
-        {
-            for (int y = 0; y <= _terrainDimension.y; y++)
-            {
-                for (int z = 0; z <= _terrainDimension.z; z++)
-                {
-                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
-                }
-            }
-        }
+        // if(_vertices == null)
+        //     return;
+        //
+        // Gizmos.color = Color.magenta;
+        // for (int x = 0; x <= _terrainDimension.x; x++)
+        // {
+        //     for (int y = 0; y <= _terrainDimension.y; y++)
+        //     {
+        //         for (int z = 0; z <= _terrainDimension.z; z++)
+        //         {
+        //             Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
+        //         }
+        //     }
+        // }
     }
 }

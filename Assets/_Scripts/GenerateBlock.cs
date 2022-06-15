@@ -105,13 +105,13 @@ public class GenerateBlock : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if(_vertPos == null)
-            return;
-        
-        Gizmos.color = Color.red;
-        for (int x = 0; x <= 1; x++)
-            for (int y = 0; y <= 1; y++)
-                for (int z = 0; z <= 1; z++)
-                    Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
+        // if(_vertPos == null)
+        //     return;
+        //
+        // Gizmos.color = Color.red;
+        // for (int x = 0; x <= 1; x++)
+        //     for (int y = 0; y <= 1; y++)
+        //         for (int z = 0; z <= 1; z++)
+        //             Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
     }
 }
