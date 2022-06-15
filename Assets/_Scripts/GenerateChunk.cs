@@ -183,7 +183,7 @@ public class GenerateChunk : MonoBehaviour
 
     private void PlaceBlockData(int y, int x, int z)
     {
-        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 2) == 1 ? 
+        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 3) == 1 ? 
                 Enums.BlockType.Dirt : Enums.BlockType.Air);
     }
 

@@ -199,8 +199,8 @@ public class GenerateTerrain : MonoBehaviour
 
     private void PlaceBlockData(int x, int y, int z)
     {
-        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 2) == 1 ? 
-            Enums.BlockType.Air : Enums.BlockType.Dirt);
+        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 6) == 1 ? 
+            Enums.BlockType.Dirt : Enums.BlockType.Air);
     }
 
     private void GenerateBlock(int x, int y, int z, Enums.BlockType type)
