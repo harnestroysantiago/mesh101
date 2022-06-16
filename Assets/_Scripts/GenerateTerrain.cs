@@ -1,79 +1,98 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Assertions;
 
-public class GenerateChunk : MonoBehaviour
+public class GenerateTerrain : MonoBehaviour
 {
-    private static Vector3Int _chunkDimension = new Vector3Int(3,3,3);
-    private BlockDto[,,] _block = new BlockDto[_chunkDimension.x,_chunkDimension.y,_chunkDimension.z];
+    
+    private static Vector3Int _terrainDimension = new Vector3Int(9,9,9);
+    private static int _chunkSize = 3;
+    private Vector3Int _chunkDimension = new Vector3Int(
+        _terrainDimension.x/_chunkSize,
+        _terrainDimension.y/_chunkSize, 
+        _terrainDimension.z/_chunkSize);
+    private BlockDto[,,] _block = new BlockDto[_terrainDimension.x,_terrainDimension.y,_terrainDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();
 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
 
-    private void Start()
+    [SerializeField]
+    private GameObject _chunkPrefab;
+    [SerializeField]
+    private Material _chunkMaterial;
+    void Start()
     {
-        _mesh = new Mesh();
-        _meshFilter = GetComponent<MeshFilter>();
-        _meshFilter.mesh = _mesh;
-        
         GenerateBlockData();
-        GenerateMeshes(_mesh);
+        GenerateChunks();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            ClearBlockAndMeshData();
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
             GenerateBlockData();
-            GenerateMeshes(_mesh);
+            GenerateChunks();
         }
     }
 
-    private void ClearBlockAndMeshData()
+    private void ClearMeshData()
     {
-        _mesh.Clear();
         _vertices.Clear();
         _triangles.Clear();
-
-        for (int x = 0; x < _chunkDimension.x; x++)
-        {
-            for (int y = 0; y < _chunkDimension.y; y++)
-            {
-                for (int z = 0; z < _chunkDimension.z; z++)
-                {
-                    _block[x, y, z] = new BlockDto()
-                    {
-                        Type = Enums.BlockType.Air,
-                        Side = new[] { false, false, false, false, false, false }
-                    };
-                }
-            }
-        }
     }
 
-    private void GenerateMeshes(Mesh mesh)
+    private void GenerateChunks()
     {
+        //where are passing the origin of each chunk
+        for (int x = 0; x < _chunkDimension.x; x++)
+            for (int y = 0; y < _chunkDimension.y; y++)
+                for (int z = 0; z < _chunkDimension.z; z++)
+                    GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
+                
+        
+    }
+
+    private void GenerateChunk(int x, int y, int z )
+    {
+        // generate new mesh
+        _mesh = new Mesh();
+        // we are receiving the chunks origin location
+        _mesh = GenerateMeshesInThisChunk(x,y,z, _mesh);
+        Transform chunkHolder;
+        //instantiate chunk prefab
+        ChunkView chunkView = Instantiate(_chunkPrefab, (chunkHolder = transform).position, Quaternion.identity, chunkHolder).GetComponent<ChunkView>();
+        // initialize chunk
+        chunkView.InitializeChunk(_mesh, _chunkMaterial);
+        // we clear our data after each chunk
+        ClearMeshData();
+    }
+
+    Mesh GenerateMeshesInThisChunk(int chunkX, int chunkY, int chunkZ, Mesh mesh)
+    {
+        // we are receiving the chunk root location
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
             for (int y = 0; y < _chunkDimension.y; y++)
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateMesh(mesh,x,y,z, blockCount); 
+                    GenerateMeshOfEachVoxelInThisChunk(mesh,x+chunkX,y+chunkY,z+chunkZ,blockCount);
                     blockCount++;
                 }
+        
+        return mesh;
     }
-
-    // this works for one chunk, we need to generate the whole chunk data and render them.
-    private void GenerateMesh(Mesh mesh, int x, int y, int z, int blockCount)
+    
+    private void GenerateMeshOfEachVoxelInThisChunk(Mesh mesh, int x, int y, int z, int blockCount)
     {
-        Vector3Int blockLoc = new Vector3Int(x, y, z);
-        BlockDto block = _block[blockLoc.x, blockLoc.y, blockLoc.z];
+        Vector3Int blockLocOffset = new Vector3Int(x, y, z);
+        BlockDto block = _block[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
         
         Vector3[] vertices = new Vector3[]
         {
@@ -92,7 +111,7 @@ public class GenerateChunk : MonoBehaviour
         // blockLoc + the vertex to give it a quad on each face
         for (int i = 0; i < 8; i++)
         {
-            vertices[i] += blockLoc;
+            vertices[i] += blockLocOffset;
         }
         
         //Bottom [0] = AHE,ADH || 074 , 037
@@ -146,48 +165,47 @@ public class GenerateChunk : MonoBehaviour
         var vertArray = _vertices.ToArray();
         var triArray = _triangles.ToArray();
         
-        mesh.Clear();
+         mesh.Clear();
         
-        mesh.name = "mesh...illicious";
+        mesh.name = "meshy...";
         mesh.vertices = vertArray;
         mesh.triangles = triArray;
         mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        mesh.RecalculateTangents();
     }
     
     private void GenerateBlockData()
     {
-        for (int x = 0; x < _chunkDimension.x; x++)
-        {
-            for (int y = 0; y < _chunkDimension.y; y++)
-            {
-                for (int z = 0; z < _chunkDimension.z; z++)
-                {
-                    PlaceBlockData(y, x, z);
-                }
-            }
-        }
-
-        for (int x = 0; x < _chunkDimension.x; x++)
-        {
-            for (int y = 0; y < _chunkDimension.y; y++)
-            {
-                for (int z = 0; z < _chunkDimension.z; z++)
-                {
+        for (int x = 0; x < _terrainDimension.x; x++)
+            for (int y = 0; y < _terrainDimension.y; y++)
+                for (int z = 0; z < _terrainDimension.z; z++)
+                    PlaceBlockData(x, y, z);
+        
+        for (int x = 0; x < _terrainDimension.x; x++)
+            for (int y = 0; y < _terrainDimension.y; y++)
+                for (int z = 0; z < _terrainDimension.z; z++)
                     CalculateSides(_block[x, y, z],x,y,z);
-                }
-            }
+    }
+
+    private void PlaceBlockData(int x, int y, int z)
+    {
+        var terrainHeight = 2;
+        
+        if (y > terrainHeight)
+        {
+            GenerateBlock(x, y, z, Enums.BlockType.Air);
+        }
+        else if(y > terrainHeight - 2)
+        {
+            GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 4) == 1 ? 
+                Enums.BlockType.Dirt : Enums.BlockType.Air);
+        }
+        else
+        {
+            GenerateBlock(x, y, z, Enums.BlockType.Dirt);
         }
     }
 
-    private void PlaceBlockData(int y, int x, int z)
-    {
-        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 3) == 1 ? 
-                Enums.BlockType.Dirt : Enums.BlockType.Air);
-    }
-
-    private void GenerateBlock(int y, int x, int z, Enums.BlockType type)
+    private void GenerateBlock(int x, int y, int z, Enums.BlockType type)
     {
         if (_block != null)
             _block[x, y, z] = new BlockDto()
@@ -196,7 +214,6 @@ public class GenerateChunk : MonoBehaviour
                 Side = new[] { false, false, false, false, false, false }
             };
     }
-
 
     private void CalculateSides(BlockDto block, int x, int y, int z)
     {
@@ -240,12 +257,12 @@ public class GenerateChunk : MonoBehaviour
         // if(_vertices == null)
         //     return;
         //
-        // Gizmos.color = Color.blue;
-        // for (int x = 0; x <= _chunkDimension.x; x++)
+        // Gizmos.color = Color.magenta;
+        // for (int x = 0; x <= _terrainDimension.x; x++)
         // {
-        //     for (int y = 0; y <= _chunkDimension.y; y++)
+        //     for (int y = 0; y <= _terrainDimension.y; y++)
         //     {
-        //         for (int z = 0; z <= _chunkDimension.z; z++)
+        //         for (int z = 0; z <= _terrainDimension.z; z++)
         //         {
         //             Gizmos.DrawSphere(new Vector3(x,y,z) + transform.position, 0.05f);
         //         }
