@@ -12,7 +12,7 @@ public class GenerateTerrain : MonoBehaviour
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
         _terrainDimension.z/_chunkSize);
-    private BlockDto[,,] _block = new BlockDto[_terrainDimension.x,_terrainDimension.y,_terrainDimension.z];
+    private BlockDto[,,] _blocks = new BlockDto[_terrainDimension.x,_terrainDimension.y,_terrainDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
     private List<int> _triangles = new List<int>();
 
@@ -23,6 +23,7 @@ public class GenerateTerrain : MonoBehaviour
     private GameObject _chunkPrefab;
     [SerializeField]
     private Material _chunkMaterial;
+    
     void Start()
     {
         GenerateBlockData();
@@ -55,46 +56,41 @@ public class GenerateTerrain : MonoBehaviour
             for (int y = 0; y < _chunkDimension.y; y++)
                 for (int z = 0; z < _chunkDimension.z; z++)
                     GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
-                
-        
     }
 
-    private void GenerateChunk(int x, int y, int z )
+    private void GenerateChunk(int chunkRootX, int chunkRootY, int chunkRootZ )
     {
-        // generate new mesh
         _mesh = new Mesh();
-        // we are receiving the chunks origin location
-        _mesh = GenerateMeshesInThisChunk(x,y,z, _mesh);
+        _mesh = GenerateMeshesInThisChunk(chunkRootX,chunkRootY,chunkRootZ, _mesh);
+        
         Transform chunkHolder;
-        //instantiate chunk prefab
         ChunkView chunkView = Instantiate(_chunkPrefab, (chunkHolder = transform).position, Quaternion.identity, chunkHolder).GetComponent<ChunkView>();
-        // initialize chunk
         chunkView.InitializeChunk(_mesh, _chunkMaterial);
-        // we clear our data after each chunk
+
         ClearMeshData();
     }
 
-    Mesh GenerateMeshesInThisChunk(int chunkX, int chunkY, int chunkZ, Mesh mesh)
+    Mesh GenerateMeshesInThisChunk(int chunkRootX, int chunkRootY, int chunkRootZ, Mesh mesh)
     {
-        // we are receiving the chunk root location
         int blockCount=0;
         for (int x = 0; x < _chunkDimension.x; x++)
             for (int y = 0; y < _chunkDimension.y; y++)
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    GenerateMeshOfEachVoxelInThisChunk(mesh,x+chunkX,y+chunkY,z+chunkZ,blockCount);
+                    GenerateMeshOfEachBlockInThisChunk(mesh,x+chunkRootX,y+chunkRootY,z+chunkRootZ,blockCount);
                     blockCount++;
                 }
         
         return mesh;
     }
     
-    private void GenerateMeshOfEachVoxelInThisChunk(Mesh mesh, int x, int y, int z, int blockCount)
+    private void GenerateMeshOfEachBlockInThisChunk(Mesh mesh, int xLocOffset, int yLocOffset, int zLocOffset, int blockCountInThisChunk)
     {
-        Vector3Int blockLocOffset = new Vector3Int(x, y, z);
-        BlockDto block = _block[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
+        // initialize our offsets for this block
+        Vector3Int blockLocOffset = new Vector3Int(xLocOffset, yLocOffset, zLocOffset);
+        BlockDto block = _blocks[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
         
-        Vector3[] vertices = new Vector3[]
+        Vector3[] vertices = 
         {
             new (0, 0, 0),
             new (0, 1, 0),
@@ -122,7 +118,8 @@ public class GenerateTerrain : MonoBehaviour
         //Back [5] = DAB,DBC || 301 , 312
         List<int> triangles = new List<int>();
         
-        // the triangles indexes needs to be adjusted as well, based on how many we have....
+        // the triangles indexes needs to be adjusted as well,
+        // based on how many quad face we have....
         for (int i = 0; i < 6; i++)
         {
             if (block.Side[i])
@@ -155,18 +152,19 @@ public class GenerateTerrain : MonoBehaviour
         // lenght + the vertex index to give it a quad on each face
         for (int i = 0; i < triangles.Count; i++)
         {
-            triangles[i] += blockCount * 8;
+            triangles[i] += blockCountInThisChunk * 8;
         }
 
         // add to existing _vertex and _triangles
         _vertices.AddRange(vertices);
         _triangles.AddRange(triangles);
         
+        // convert to array
         var vertArray = _vertices.ToArray();
         var triArray = _triangles.ToArray();
         
-         mesh.Clear();
-        
+        // pass the vertices and triangles to our mesh
+        mesh.Clear();
         mesh.name = "meshy...";
         mesh.vertices = vertArray;
         mesh.triangles = triArray;
@@ -183,7 +181,7 @@ public class GenerateTerrain : MonoBehaviour
         for (int x = 0; x < _terrainDimension.x; x++)
             for (int y = 0; y < _terrainDimension.y; y++)
                 for (int z = 0; z < _terrainDimension.z; z++)
-                    CalculateSides(_block[x, y, z],x,y,z);
+                    CalculateSides(_blocks[x, y, z],x,y,z);
     }
 
     private void PlaceBlockData(int x, int y, int z)
@@ -207,8 +205,8 @@ public class GenerateTerrain : MonoBehaviour
 
     private void GenerateBlock(int x, int y, int z, Enums.BlockType type)
     {
-        if (_block != null)
-            _block[x, y, z] = new BlockDto()
+        if (_blocks != null)
+            _blocks[x, y, z] = new BlockDto()
             {
                 Type = type,
                 Side = new[] { false, false, false, false, false, false }
@@ -238,7 +236,7 @@ public class GenerateTerrain : MonoBehaviour
     {
         try
         {
-            return _block[blockLoc.x, blockLoc.y, blockLoc.z];
+            return _blocks[blockLoc.x, blockLoc.y, blockLoc.z];
         }
         catch (Exception)
         {
