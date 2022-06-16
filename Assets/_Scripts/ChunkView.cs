@@ -18,6 +18,9 @@ public class ChunkView : MonoBehaviour
 
     public void InitializeChunk(Mesh mesh, Material material)
     {
+        if(mesh.triangles.Length == 0)
+            return;
+        
         _meshFilter.mesh = mesh;
         _meshCollider.sharedMesh = mesh;
         _meshRenderer.material = material;

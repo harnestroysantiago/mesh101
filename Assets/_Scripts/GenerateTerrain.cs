@@ -175,31 +175,19 @@ public class GenerateTerrain : MonoBehaviour
     private void GenerateBlockData()
     {
         for (int x = 0; x < _terrainDimension.x; x++)
-        {
             for (int y = 0; y < _terrainDimension.y; y++)
-            {
                 for (int z = 0; z < _terrainDimension.z; z++)
-                {
                     PlaceBlockData(x, y, z);
-                }
-            }
-        }
-
+        
         for (int x = 0; x < _terrainDimension.x; x++)
-        {
             for (int y = 0; y < _terrainDimension.y; y++)
-            {
                 for (int z = 0; z < _terrainDimension.z; z++)
-                {
                     CalculateSides(_block[x, y, z],x,y,z);
-                }
-            }
-        }
     }
 
     private void PlaceBlockData(int x, int y, int z)
     {
-        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 6) == 1 ? 
+        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 3) == 1 ? 
             Enums.BlockType.Dirt : Enums.BlockType.Air);
     }
 
