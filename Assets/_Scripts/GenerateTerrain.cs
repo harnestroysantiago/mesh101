@@ -6,9 +6,9 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(6,12,6);
-    private static int _chunkSize = 3;
-    private int _terrainHeight = 2;
+    private static Vector3Int _terrainDimension = new Vector3Int(32,64,32);
+    private static int _chunkSize = 4;
+    private int _terrainHeight = (int)(_terrainDimension.y * 0.2f);
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
@@ -226,10 +226,10 @@ public class GenerateTerrain : MonoBehaviour
             {
                 GenerateBlock(x, y, z, Enums.BlockType.Air);
             }
-            else if (y > terrainHeight - 2)
+            else if (y > terrainHeight - (terrainHeight * 0.5f))
             {
                 GenerateBlock(x, y, z,
-                    UnityEngine.Random.Range(0, 4) == 1 ? Enums.BlockType.Dirt : Enums.BlockType.Air);
+                    UnityEngine.Random.Range(0, 8) == 1 ? Enums.BlockType.Dirt : Enums.BlockType.Air);
             }
             else
             {
