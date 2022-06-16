@@ -6,8 +6,9 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(8,8,8);
-    private static int _chunkSize = 4;
+    private static Vector3Int _terrainDimension = new Vector3Int(6,12,6);
+    private static int _chunkSize = 3;
+    private int _terrainHeight = 2;
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
@@ -18,7 +19,9 @@ public class GenerateTerrain : MonoBehaviour
 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
-
+    
+    [SerializeField] 
+    private bool _hasTerrain;
     [SerializeField]
     private GameObject _chunkPrefab;
     [SerializeField]
@@ -60,6 +63,7 @@ public class GenerateTerrain : MonoBehaviour
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
                     GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
+                    
                     // Debug.Log("passed chunks loc = " 
                     //           + x * _chunkSize + "," 
                     //           + y * _chunkSize + "," 
@@ -105,7 +109,12 @@ public class GenerateTerrain : MonoBehaviour
         // initialize our offsets for this block
         Vector3Int blockLocOffset = new Vector3Int(xLocOffset, yLocOffset, zLocOffset);
         BlockDto block = _blocks[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
-        // Debug.Log("my parent chunkLoc = " + block.ParentChunkLoc);
+        
+        // Debug.Log(
+        //     "my type is = " + block.Type +
+        //         " || my loc is = " + blockLocOffset + 
+        //         " || my parent chunkLoc = " + block.ParentChunkLoc);
+        
         
         Vector3[] vertices = 
         {
@@ -193,7 +202,7 @@ public class GenerateTerrain : MonoBehaviour
         for (int x = 0; x < _terrainDimension.x; x++)
             for (int y = 0; y < _terrainDimension.y; y++)
                 for (int z = 0; z < _terrainDimension.z; z++)
-                    PlaceBlockData(x, y, z);
+                    PlaceBlockData(x, y, z, _hasTerrain);
         
         for (int x = 0; x < _terrainDimension.x; x++)
             for (int y = 0; y < _terrainDimension.y; y++)
@@ -207,22 +216,30 @@ public class GenerateTerrain : MonoBehaviour
                 
     }
 
-    private void PlaceBlockData(int x, int y, int z)
+    private void PlaceBlockData(int x, int y, int z, bool hasTerrain)
     {
-        var terrainHeight = 2;
-        
-        if (y > terrainHeight)
+        if(hasTerrain)
         {
-            GenerateBlock(x, y, z, Enums.BlockType.Air);
-        }
-        else if(y > terrainHeight - 2)
-        {
-            GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 4) == 1 ? 
-                Enums.BlockType.Dirt : Enums.BlockType.Air);
+            var terrainHeight = _terrainHeight;
+
+            if (y > terrainHeight)
+            {
+                GenerateBlock(x, y, z, Enums.BlockType.Air);
+            }
+            else if (y > terrainHeight - 2)
+            {
+                GenerateBlock(x, y, z,
+                    UnityEngine.Random.Range(0, 4) == 1 ? Enums.BlockType.Dirt : Enums.BlockType.Air);
+            }
+            else
+            {
+                GenerateBlock(x, y, z, Enums.BlockType.Dirt);
+            }
         }
         else
         {
-            GenerateBlock(x, y, z, Enums.BlockType.Dirt);
+            GenerateBlock(x, y, z,
+                UnityEngine.Random.Range(0, 4) == 1 ? Enums.BlockType.Dirt : Enums.BlockType.Air);
         }
     }
 
