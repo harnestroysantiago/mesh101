@@ -6,7 +6,7 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(8,8,8);
+    private static Vector3Int _terrainDimension = new Vector3Int(16,32,16);
     private static int _chunkSize = 4;
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
@@ -26,7 +26,9 @@ public class GenerateTerrain : MonoBehaviour
     
     void Start()
     {
+        Debug.Log("my terrain dimension = " + _terrainDimension);
         Debug.Log("my chunk dimension = " + _chunkDimension);
+        Debug.Log("my chunk size = " + _chunkSize);
         GenerateBlockData();
         GenerateChunks();
     }
@@ -57,11 +59,11 @@ public class GenerateTerrain : MonoBehaviour
             for (int y = 0; y < _chunkDimension.y; y++)
                 for (int z = 0; z < _chunkDimension.z; z++)
                 {
-                    Debug.Log("passed chunks loc = " 
-                              + x * _chunkSize + "," 
-                              + y * _chunkSize + "," 
-                              + z * _chunkSize);
                     GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
+                    // Debug.Log("passed chunks loc = " 
+                    //           + x * _chunkSize + "," 
+                    //           + y * _chunkSize + "," 
+                    //           + z * _chunkSize);
                 }
     }
 
@@ -87,9 +89,9 @@ public class GenerateTerrain : MonoBehaviour
     Mesh GenerateMeshesInThisChunk(int chunkRootX, int chunkRootY, int chunkRootZ, Mesh mesh)
     {
         int blockCount=0;
-        for (int x = 0; x < _chunkDimension.x; x++)
-            for (int y = 0; y < _chunkDimension.y; y++)
-                for (int z = 0; z < _chunkDimension.z; z++)
+        for (int x = 0; x < _chunkSize; x++)
+            for (int y = 0; y < _chunkSize; y++)
+                for (int z = 0; z < _chunkSize; z++)
                 {
                     GenerateMeshOfEachBlockInThisChunk(mesh,x+chunkRootX,y+chunkRootY,z+chunkRootZ,blockCount);
                     blockCount++;
