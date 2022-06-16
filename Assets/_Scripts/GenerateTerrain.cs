@@ -6,8 +6,8 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(9,9,9);
-    private static int _chunkSize = 3;
+    private static Vector3Int _terrainDimension = new Vector3Int(8,8,8);
+    private static int _chunkSize = 4;
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
         _terrainDimension.y/_chunkSize, 
@@ -26,6 +26,7 @@ public class GenerateTerrain : MonoBehaviour
     
     void Start()
     {
+        Debug.Log("my chunk dimension = " + _chunkDimension);
         GenerateBlockData();
         GenerateChunks();
     }
@@ -55,7 +56,13 @@ public class GenerateTerrain : MonoBehaviour
         for (int x = 0; x < _chunkDimension.x; x++)
             for (int y = 0; y < _chunkDimension.y; y++)
                 for (int z = 0; z < _chunkDimension.z; z++)
+                {
+                    Debug.Log("passed chunks loc = " 
+                              + x * _chunkSize + "," 
+                              + y * _chunkSize + "," 
+                              + z * _chunkSize);
                     GenerateChunk(x * _chunkSize,y * _chunkSize,z * _chunkSize);
+                }
     }
 
     private void GenerateChunk(int chunkRootX, int chunkRootY, int chunkRootZ )
@@ -65,6 +72,13 @@ public class GenerateTerrain : MonoBehaviour
         
         Transform chunkHolder;
         ChunkView chunkView = Instantiate(_chunkPrefab, (chunkHolder = transform).position, Quaternion.identity, chunkHolder).GetComponent<ChunkView>();
+        
+        string gameObjectName = 
+            String.Concat(chunkRootX + "," + chunkRootY + "," + chunkRootZ);
+        
+        _mesh.name = gameObjectName;
+        chunkView.gameObject.name = gameObjectName;
+        
         chunkView.InitializeChunk(_mesh, _chunkMaterial);
 
         ClearMeshData();
