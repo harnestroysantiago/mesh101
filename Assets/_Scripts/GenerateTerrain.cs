@@ -6,7 +6,7 @@ using UnityEngine;
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(16,32,16);
+    private static Vector3Int _terrainDimension = new Vector3Int(8,8,8);
     private static int _chunkSize = 4;
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
@@ -105,6 +105,7 @@ public class GenerateTerrain : MonoBehaviour
         // initialize our offsets for this block
         Vector3Int blockLocOffset = new Vector3Int(xLocOffset, yLocOffset, zLocOffset);
         BlockDto block = _blocks[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
+        // Debug.Log("my parent chunkLoc = " + block.ParentChunkLoc);
         
         Vector3[] vertices = 
         {
@@ -198,6 +199,12 @@ public class GenerateTerrain : MonoBehaviour
             for (int y = 0; y < _terrainDimension.y; y++)
                 for (int z = 0; z < _terrainDimension.z; z++)
                     CalculateSides(_blocks[x, y, z],x,y,z);
+        
+        for (int x = 0; x < _chunkDimension.x; x++)
+            for (int y = 0; y < _chunkDimension.y; y++)
+                for (int z = 0; z < _chunkDimension.z; z++)
+                    SetParentChunkLoc(x*_chunkSize,y*_chunkSize,z*_chunkSize);
+                
     }
 
     private void PlaceBlockData(int x, int y, int z)
@@ -227,6 +234,14 @@ public class GenerateTerrain : MonoBehaviour
                 Type = type,
                 Side = new[] { false, false, false, false, false, false }
             };
+    }
+
+    private void SetParentChunkLoc(int chunkX, int chunkY, int chunkZ)
+    {
+        for (int x = 0; x < _chunkSize; x++)
+            for (int y = 0; y < _chunkSize; y++)
+                for (int z = 0; z < _chunkSize; z++)
+                    _blocks[x+chunkX,y+chunkY,z+chunkZ].ParentChunkLoc = new Vector3Int(chunkX,chunkY,chunkZ);
     }
 
     private void CalculateSides(BlockDto block, int x, int y, int z)
