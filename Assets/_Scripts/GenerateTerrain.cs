@@ -61,11 +61,13 @@ public class GenerateTerrain : MonoBehaviour
 
     private void GenerateChunk(int x, int y, int z )
     {
+        // generate new mesh
         _mesh = new Mesh();
         // we are receiving the chunks origin location
         _mesh = GenerateMeshesInThisChunk(x,y,z, _mesh);
+        Transform chunkHolder;
         //instantiate chunk prefab
-        ChunkView chunkView = Instantiate(_chunkPrefab, transform.position, Quaternion.identity, transform).GetComponent<ChunkView>();
+        ChunkView chunkView = Instantiate(_chunkPrefab, (chunkHolder = transform).position, Quaternion.identity, chunkHolder).GetComponent<ChunkView>();
         // initialize chunk
         chunkView.InitializeChunk(_mesh, _chunkMaterial);
         // we clear our data after each chunk
@@ -86,8 +88,7 @@ public class GenerateTerrain : MonoBehaviour
         
         return mesh;
     }
-
-    // this works for one chunk, we need to generate the whole chunk data and render them.
+    
     private void GenerateMeshOfEachVoxelInThisChunk(Mesh mesh, int x, int y, int z, int blockCount)
     {
         Vector3Int blockLocOffset = new Vector3Int(x, y, z);
@@ -187,8 +188,21 @@ public class GenerateTerrain : MonoBehaviour
 
     private void PlaceBlockData(int x, int y, int z)
     {
-        GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 3) == 1 ? 
-            Enums.BlockType.Dirt : Enums.BlockType.Air);
+        var terrainHeight = 2;
+        
+        if (y > terrainHeight)
+        {
+            GenerateBlock(x, y, z, Enums.BlockType.Air);
+        }
+        else if(y > terrainHeight - 2)
+        {
+            GenerateBlock(x, y, z, UnityEngine.Random.Range(0, 4) == 1 ? 
+                Enums.BlockType.Dirt : Enums.BlockType.Air);
+        }
+        else
+        {
+            GenerateBlock(x, y, z, Enums.BlockType.Dirt);
+        }
     }
 
     private void GenerateBlock(int x, int y, int z, Enums.BlockType type)
