@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GenerateTerrain : MonoBehaviour
 {
     
-    private static Vector3Int _terrainDimension = new Vector3Int(32,64,32);
-    private static int _chunkSize = 4;
+    private static Vector3Int _terrainDimension = new Vector3Int(9,9,9);
+    private static int _chunkSize = 3;
     private int _terrainHeight = (int)(_terrainDimension.y * 0.2f);
     private Vector3Int _chunkDimension = new Vector3Int(
         _terrainDimension.x/_chunkSize,
@@ -15,6 +16,7 @@ public class GenerateTerrain : MonoBehaviour
         _terrainDimension.z/_chunkSize);
     private BlockDto[,,] _blocks = new BlockDto[_terrainDimension.x,_terrainDimension.y,_terrainDimension.z];
     private List<Vector3> _vertices = new List<Vector3>();
+    private List<Vector2> _uvs = new List<Vector2>();
     private List<int> _triangles = new List<int>();
 
     private Mesh _mesh;
@@ -128,6 +130,19 @@ public class GenerateTerrain : MonoBehaviour
             new (1, 1, 1),
             new (1, 0, 1)
         };
+
+        Vector2[] uvs =
+        {
+            new (0,0),
+            new (0,1),
+            new (1,1),
+            new (1,0),
+            
+            new (1,0),
+            new (1,1),
+            new (0,1),
+            new (0,0)
+        };
         
         // this updates the offset of the chunk vertices, so we always go on the
         // blockLoc + the vertex to give it a quad on each face
@@ -184,15 +199,18 @@ public class GenerateTerrain : MonoBehaviour
         // add to existing _vertex and _triangles
         _vertices.AddRange(vertices);
         _triangles.AddRange(triangles);
+        _uvs.AddRange(uvs);
         
         // convert to array
         var vertArray = _vertices.ToArray();
         var triArray = _triangles.ToArray();
+        var uvArray = _uvs.ToArray();
         
         // pass the vertices and triangles to our mesh
         mesh.Clear();
         mesh.name = "meshy...";
         mesh.vertices = vertArray;
+        mesh.uv = uvArray;
         mesh.triangles = triArray;
         mesh.RecalculateNormals();
     }

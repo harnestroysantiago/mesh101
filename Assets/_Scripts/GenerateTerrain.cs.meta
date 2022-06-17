@@ -3,7 +3,9 @@ guid: 9076145960f534ea3b1caf4c6a242de1
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - _chunkPrefab: {fileID: 4914895117221062270, guid: b0a61eff0b67c4a62aa882424d216cb8, type: 3}
+  - _chunkMaterial: {fileID: 2100000, guid: 8d869454a4bb44e3caed993ccc31b301, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
