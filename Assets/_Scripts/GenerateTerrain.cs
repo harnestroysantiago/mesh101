@@ -55,6 +55,7 @@ public class GenerateTerrain : MonoBehaviour
     {
         _vertices.Clear();
         _triangles.Clear();
+        _uvs.Clear();
     }
 
     private void GenerateChunks()
