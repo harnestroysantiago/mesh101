@@ -121,36 +121,59 @@ public class GenerateTerrain : MonoBehaviour
         
         Vector3[] vertices = 
         {
-            new (0, 0, 0),
-            new (0, 1, 0),
-            new (1, 1, 0),
-            new (1, 0, 0),
-            
-            new (0, 0, 1),
-            new (0, 1, 1),
-            new (1, 1, 1),
-            new (1, 0, 1)
+            new(0, 0, 0), 
+            new(0, 1, 0), 
+            new(1, 1, 0), 
+            new(1, 0, 0), 
+            new(0, 0, 1), 
+            new(0, 1, 1), 
+            new(1, 1, 1), 
+            new(1, 0, 1),
+                
+            new(0, 1, 0), 
+            new(0, 1, 1), 
+            new(1, 1, 1), 
+            new(1, 1, 0),
+                
+            new(0, 0, 0), 
+            new(0, 0, 1), 
+            new(1, 0, 1), 
+            new(1, 0, 0)
         };
 
         Vector2[] uvs =
         {
-            new (0,0),
-            new (0,1),
-            new (1,1),
-            new (1,0),
-            
-            new (1,0),
-            new (1,1),
-            new (0,1),
-            new (0,0)
+            new(0,0),
+            new(0,1),
+            new(1,1),
+            new(1,0),
+                
+            new(1,0),
+            new(1,1),
+            new(0,1),
+            new(0,0),
+                
+            new(0,0),
+            new(0,1),
+            new(1,1),
+            new(1,0),
+                
+            new(0,0),
+            new(0,1),
+            new(1,1),
+            new(1,0),
         };
         
         // this updates the offset of the chunk vertices, so we always go on the
         // blockLoc + the vertex to give it a quad on each face
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 16; i++)
         {
             vertices[i] += blockLocOffset;
         }
+        
+        // additional uv mapping, please dont delete
+        //Bottom [0] = AHE,ADH || 12 14 13 , 12 15 14
+        //Top [1] = CBF,CFG || 11 8 9 , 11 9 10  
         
         //Bottom [0] = AHE,ADH || 074 , 037
         //Top [1] = CBF,CFG || 215 , 256  
@@ -169,10 +192,12 @@ public class GenerateTerrain : MonoBehaviour
                 switch (i)
                 {
                     case (int)Enums.BlockSide.Bottom:
-                        triangles.AddRange(new int[]{0,7,4,0,3,7});
+                        //triangles.AddRange(new int[]{0,7,4,0,3,7});
+                        triangles.AddRange(new[] { 12, 14, 13, 12, 15, 14 });
                         break;
                     case (int)Enums.BlockSide.Top:
-                        triangles.AddRange(new int[]{2,1,5,2,5,6});
+                        //triangles.AddRange(new int[]{2,1,5,2,5,6});
+                        triangles.AddRange(new[] { 11, 8, 9, 11, 9, 10 });
                         break;
                     case (int)Enums.BlockSide.Left:
                         triangles.AddRange(new int[]{0,4,5,0,5,1});
@@ -194,7 +219,7 @@ public class GenerateTerrain : MonoBehaviour
         // lenght + the vertex index to give it a quad on each face
         for (int i = 0; i < triangles.Count; i++)
         {
-            triangles[i] += blockCountInThisChunk * 8;
+            triangles[i] += blockCountInThisChunk * 16;
         }
 
         // add to existing _vertex and _triangles
