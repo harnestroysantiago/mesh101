@@ -110,8 +110,8 @@ public class GenerateTerrain : MonoBehaviour
     private void GenerateMeshOfEachBlockInThisChunk(Mesh mesh, int xLocOffset, int yLocOffset, int zLocOffset, int blockCountInThisChunk)
     {
         // initialize our offsets for this block
-        Vector3Int blockLocOffset = new Vector3Int(xLocOffset, yLocOffset, zLocOffset);
-        BlockDto block = _blocks[blockLocOffset.x, blockLocOffset.y, blockLocOffset.z];
+        Vector3 blockLocOffset = new Vector3(xLocOffset, yLocOffset, zLocOffset);
+        BlockDto block = _blocks[xLocOffset, yLocOffset, zLocOffset];
         
         // Debug.Log(
         //     "my type is = " + block.Type +
@@ -119,56 +119,31 @@ public class GenerateTerrain : MonoBehaviour
         //         " || my parent chunkLoc = " + block.ParentChunkLoc);
         
         
-        Vector3[] vertices = 
+        Vector3[] vP = 
         {
-            new(0, 0, 0), 
-            new(0, 1, 0), 
-            new(1, 1, 0), 
-            new(1, 0, 0), 
-            new(0, 0, 1), 
-            new(0, 1, 1), 
-            new(1, 1, 1), 
-            new(1, 0, 1),
-                
-            new(0, 1, 0), 
-            new(0, 1, 1), 
-            new(1, 1, 1), 
-            new(1, 1, 0),
-                
-            new(0, 0, 0), 
-            new(0, 0, 1), 
-            new(1, 0, 1), 
-            new(1, 0, 0)
+            new Vector3(0, 0, 0), 
+            new Vector3(0, 1, 0), 
+            new Vector3(1, 1, 0), 
+            new Vector3(1, 0, 0), 
+            new Vector3(0, 0, 1), 
+            new Vector3(0, 1, 1), 
+            new Vector3(1, 1, 1), 
+            new Vector3(1, 0, 1),
         };
 
-        Vector2[] uvs =
-        {
-            new(0,0),
-            new(0,1),
-            new(1,1),
-            new(1,0),
-                
-            new(1,0),
-            new(1,1),
-            new(0,1),
-            new(0,0),
-                
-            new(0,0),
-            new(0,1),
-            new(1,1),
-            new(1,0),
-                
-            new(0,0),
-            new(0,1),
-            new(1,1),
-            new(1,0),
-        };
+        // Vector2[] uvs =
+        // {
+        //     new(0,0),
+        //     new(0,1),
+        //     new(1,1),
+        //     new(1,0),
+        // };
         
         // this updates the offset of the chunk vertices, so we always go on the
         // blockLoc + the vertex to give it a quad on each face
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 8; i++)
         {
-            vertices[i] += blockLocOffset;
+            vP[i] += blockLocOffset;
         }
         
         // additional uv mapping, please dont delete
@@ -182,9 +157,12 @@ public class GenerateTerrain : MonoBehaviour
         //Front [4] = EHG,EGF || 476 , 465
         //Back [5] = DAB,DBC || 301 , 312
         List<int> triangles = new List<int>();
+        List<Vector3> vertices = new List<Vector3>();
+        List<Vector2> uvs = new List<Vector2>();
         
         // the triangles indexes needs to be adjusted as well,
         // based on how many quad face we have....
+        int vertMultiplier = 0;
         for (int i = 0; i < 6; i++)
         {
             if (block.Side[i])
@@ -192,26 +170,38 @@ public class GenerateTerrain : MonoBehaviour
                 switch (i)
                 {
                     case (int)Enums.BlockSide.Bottom:
-                        //triangles.AddRange(new int[]{0,7,4,0,3,7});
-                        triangles.AddRange(new[] { 12, 14, 13, 12, 15, 14 });
+                        vertices.AddRange(new[]{vP[4],vP[0],vP[3],vP[7]});
+                        //triangles.AddRange(new[] { 4, 0, 3, 4, 3, 7 });
                         break;
                     case (int)Enums.BlockSide.Top:
-                        //triangles.AddRange(new int[]{2,1,5,2,5,6});
-                        triangles.AddRange(new[] { 11, 8, 9, 11, 9, 10 });
-                        break;
-                    case (int)Enums.BlockSide.Left:
-                        triangles.AddRange(new int[]{0,4,5,0,5,1});
+                        vertices.AddRange(new[]{vP[1],vP[5],vP[6],vP[2]});
+                        //triangles.AddRange(new[] { 1, 5, 6, 1, 6, 2 });
                         break;
                     case (int)Enums.BlockSide.Right:
-                        triangles.AddRange(new int[]{7,3,2,7,2,6});
+                        vertices.AddRange(new[]{vP[3],vP[2],vP[6],vP[7]});
+                        //triangles.AddRange(new int[]{3,2,6,3,6,7});
+                        break;
+                    case (int)Enums.BlockSide.Left:
+                        vertices.AddRange(new[]{vP[4],vP[5],vP[1],vP[0]});
+                        //triangles.AddRange(new int[]{4,5,1,4,1,0});
                         break;
                     case (int)Enums.BlockSide.Front:
-                        triangles.AddRange(new int[]{4,7,6,4,6,5});
+                        vertices.AddRange(new[]{vP[5],vP[4],vP[7],vP[6]});
+                        //triangles.AddRange(new int[]{5,4,7,5,7,6});
                         break;
                     case (int)Enums.BlockSide.Back:
-                        triangles.AddRange(new int[]{3,0,1,3,1,2});
+                        vertices.AddRange(new[]{vP[0],vP[1],vP[2],vP[3]});
+                        //triangles.AddRange(new int[]{0,1,2,0,2,3});
                         break;
                 }
+                vertMultiplier++;
+                uvs.AddRange(GetSideUVs(new Vector2Int(0,15)));
+                triangles.Add(vertices.Count - 4);
+                triangles.Add(vertices.Count - 3);
+                triangles.Add(vertices.Count - 2);
+                triangles.Add(vertices.Count - 4);
+                triangles.Add(vertices.Count - 2);
+                triangles.Add(vertices.Count - 1);
             }
         }
         
@@ -219,7 +209,8 @@ public class GenerateTerrain : MonoBehaviour
         // lenght + the vertex index to give it a quad on each face
         for (int i = 0; i < triangles.Count; i++)
         {
-            triangles[i] += blockCountInThisChunk * 16;
+            // triangles[i] += blockCountInThisChunk 8 8;
+            triangles[i] += _vertices.Count;
         }
 
         // add to existing _vertex and _triangles
@@ -234,12 +225,47 @@ public class GenerateTerrain : MonoBehaviour
         
         // pass the vertices and triangles to our mesh
         mesh.Clear();
-        mesh.name = "meshy...";
+        // mesh.name = "meshy...";
         mesh.vertices = vertArray;
         mesh.uv = uvArray;
         mesh.triangles = triArray;
         mesh.RecalculateNormals();
     }
+    
+    static Vector2[] GetSideUVs(Vector2Int tileCoords)
+    {
+
+        Vector2[] uvs = new Vector2[4];
+
+        //TODO: implement SO
+        Vector2Int tilePos = new Vector2Int(2, 15);
+        float textureOffset = 0.0001f;
+        float bias = 1 / 16;
+        //-------------------------------
+        uvs[0] = new Vector2
+        (
+            bias * tilePos.x + bias - textureOffset,
+            bias * tilePos.y + textureOffset
+        );
+        uvs[1] = new Vector2
+        (
+            bias * tilePos.x + bias - textureOffset,
+            bias * tilePos.y + bias - textureOffset
+        );
+        uvs[2] = new Vector2
+        (
+            bias * tilePos.x + textureOffset,
+            bias * tilePos.y + bias - textureOffset
+        );
+        uvs[3] = new Vector2
+        (
+            bias * tilePos.x + textureOffset,
+            bias * tilePos.y + textureOffset
+        );
+        
+        return uvs;
+    }
+
     
     private void GenerateBlockData()
     {
